@@ -24,7 +24,7 @@ holidays>=0.10.5.2
 # machine learning
 scikit-learn>=0.24.1
 Keras>=2.4.3
-ternsorflow>=2.2.0
+tensorflow==1.0.1
 
 # web
 flask>=1.1.2
