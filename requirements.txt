@@ -22,7 +22,7 @@ Rtree>=0.9.7
 holidays>=0.10.5.2
 
 # machine learning
-tensorflow>=1.0.0
+# tensorflow>=1.0.0
 scikit-learn>=0.24.1
 Keras>=2.4.3
 
