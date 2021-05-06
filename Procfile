@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath ./package/taxi_trip_duration_api app:app
+web: gunicorn --pythonpath ./packages/taxi_trip_duration_api app:app
