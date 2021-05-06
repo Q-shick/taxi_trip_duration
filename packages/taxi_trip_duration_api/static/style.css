@@ -1,0 +1,41 @@
+html, body {
+	text-align: center;
+	font-family: "Verdana";
+}
+
+h1.section_title {
+	font-size: 24px;
+	text-align:center;
+}
+
+p {
+	margin-left: 15%;
+	margin-right: 15%;
+	line-height: 1.5;
+	text-align: justify;
+}
+
+#predict {
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+#input_form button {
+	width: 12%;
+	margin-bottom: 10px;
+}
+
+#input_form input {
+	margin-bottom: 10px;
+}
+
+#map {
+	width: 100%;
+	height: 500px;
+}
+
+#chart {
+	text-align:center;
+	margin-left: 20%;
+	margin-right: 20%;
+}

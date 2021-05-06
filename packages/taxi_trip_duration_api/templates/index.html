@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>NYC Taxi Trip Duration</title>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1 class="section_title">NYC TAXI TRIP DURATION</h1>
+    <p>This application predicts taxi trip durations in NYC with an AI model built from 1.5 million
+      <a href="">Historical NYC Taxi Trips</a>, current weather data, and geographical data.
+      The process without calculating routes is light to make predictions fast.
+      Simply click pickup/dropoff points, set the passenger count, and press the prediction button is all it needs.
+    </p>
+  </header>
+
+  <div id="predict">
+    <!-- Input to ML model -->
+    <form id="input_form">
+      <br>
+      <label for="pickup_latitude">PICK-UP</label>
+      <input id="pickup_latitude" type="text" name="Pickup Latitude" placeholder="Pickup Latitude" required="required"/>
+      <input id="pickup_longitude" type="text" name="Pickup Longitude" placeholder="Pickup Longitude" required="required"/>
+      <br>
+      <label for="dropoff_latitude">DROP-OFF</label>
+      <input id="dropoff_latitude" type="text" name="Dropoff Latitude" placeholder="Dropoff Latitude" required="required"/>
+      <input id="dropoff_longitude" type="text" name="Dropoff Longitude" placeholder="Dropoff Longitude" required="required"/>
+      <br>
+      <label for="passenger_count">PASSENGERS</label>
+      <input id="passenger_count" type="number" name="Passenger Count" placeholder="Passenger Count" required="required"/>
+      <button type="submit" class="btn btn-primary btn-block btn-large" onclick="resetMarker()">Predict Duration</button>
+    </form>
+    <div id="pred_result"></div>
+    <br>
+    <div id="map"></div>
+  </div>
+
+  <br><br>
+
+  <h1 class="section_title">HISTORICAL TRIPS BY HOUR</h1>
+  <p>3000 taxi trips randomly selected from the historical data are animated below by hour.
+  Bubble size represents trip distance. Zoom in and hover over to see trip details.</p>
+  <div id="chart"></div>
+</body>
+
+<!-- D3.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<!-- Mapbox.js -->
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.2.0/mapbox-gl.js'></script>
+<!-- Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- Mapbox -->
+<script>
+	var click_longitude, click_latitude,
+      pickup_longitude, pickup_latitude,
+      dropoff_longitude, dropoff_latitude;
+
+  mapboxgl.accessToken = "{{ mapbox_access_token }}"
+  var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [-73.9875, 40.7327],
+    zoom: 12,
+    bearing: 0,
+    pitch: 0
+  });
+
+  var pickup_marker, dropoff_marker;
+  var pickup_popup = new mapboxgl.Popup().setText('Pickup').addTo(map);
+  var dropoff_popup = new mapboxgl.Popup().setText('Dropoff').addTo(map);
+  var click_count = 0;
+
+	var nav = new mapboxgl.NavigationControl();
+	map.addControl(nav, 'top-left');
+
+  map.on('click', function(e) {
+    var coordinates = e.lngLat;
+    click_longitude = coordinates.lng;
+    click_latitude = coordinates.lat;
+
+    if (click_count % 2 == 0) {
+      if (typeof pickup_marker !== "undefined") {
+        pickup_marker.remove();
+      }
+      pickup_marker = new mapboxgl.Marker().setLngLat([click_longitude, click_latitude]).addTo(map).setPopup(pickup_popup);
+      document.getElementById('pickup_longitude').value = click_longitude;
+      document.getElementById('pickup_latitude').value = click_latitude;
+    }
+    else {
+      if (typeof dropoff_marker !== "undefined") {
+        dropoff_marker.remove();
+      }
+      dropoff_marker = new mapboxgl.Marker().setLngLat([click_longitude, click_latitude]).addTo(map).setPopup(dropoff_popup);
+      document.getElementById('dropoff_longitude').value = click_longitude;
+      document.getElementById('dropoff_latitude').value = click_latitude;
+    }
+    click_count++;
+  });
+
+  function getPickLonLat() {
+    if (typeof pickup_marker !== "undefined") {
+      pickup_marker.remove();
+    }
+    document.getElementById('pickup_longitude').value = click_longitude;
+    document.getElementById('pickup_latitude').value = click_latitude;
+    pickup_marker = new mapboxgl.Marker().setLngLat([click_longitude, click_latitude]).addTo(map);
+  }
+
+  function getDropLonLat() {
+    if (typeof dropoff_marker !== "undefined") {
+      dropoff_marker.remove();
+    }
+    document.getElementById('dropoff_longitude').value = click_longitude;
+    document.getElementById('dropoff_latitude').value = click_latitude;
+    dropoff_marker = new mapboxgl.Marker().setLngLat([click_longitude, click_latitude]).addTo(map);
+  }
+</script>
+
+<script>
+$(document).ready(function() {
+	$('form').on('submit', function pred(event) {
+		$.ajax({
+			data : {
+				pickup_latitude : $('#pickup_latitude').val(),
+				pickup_longitude : $('#pickup_longitude').val(),
+        dropoff_latitude : $('#dropoff_latitude').val(),
+        dropoff_longitude : $('#dropoff_longitude').val(),
+        passenger_count : $('#passenger_count').val()
+			},
+			type : 'POST',
+			url : '/predict',
+      success : function(data) {
+        console.log(data);
+        $('#pred_result').html(data);
+      },
+      error : function() {
+        alert("Error occurred");
+      }
+		})
+    event.preventDefault();
+	});
+});
+</script>
+
+<!-- Plotly -->
+<script type="text/javascript">
+  var graphs = {{graphJSON | safe}};
+  Plotly.plot('chart',graphs,{});
+</script>
+
+</html>

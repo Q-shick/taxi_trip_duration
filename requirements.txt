@@ -1,0 +1,31 @@
+# setup
+setuptools>=47.0.0
+wheel>=0.34.0
+
+# data processing
+numpy>=1.19.5
+pandas>=1.1.5
+pyyaml>=5.4.1
+
+# plots
+seaborn>=0.11.1
+plotly>=4.14.3
+matplotlib>=3.3.4
+dash>=1.20.0
+
+# geographical processing
+geopy>=2.0.0
+Shapely>=1.7.0
+Rtree>=0.9.7
+
+# date processing
+holidays>=0.10.5.2
+
+# machine learning
+tensorflow>=2.4.1
+scikit-learn>=0.24.1
+Keras>=2.4.3
+
+# web
+flask>=1.1.2
+gunicorn>=20.1.0
