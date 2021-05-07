@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import json
+import pickle
 import datetime as dt
 
 from flask import Flask, request, jsonify, render_template
@@ -8,12 +9,11 @@ import plotly
 import plotly.graph_objs as go
 import plotly.express as px
 
-from keras.models import load_model
 from taxi_trip_duration_api import config, pipeline as pp
 
 #----------------------------------------------------------------------------------
 
-model = load_model("data/model.h5")
+model = pickle.load(open("data/model.pickle", 'rb'))
 
 df_map = pd.read_csv("data/taxi_trip_samples_2.csv")
 px.set_mapbox_access_token(config.API_KEYS["mapbox"])
@@ -49,7 +49,7 @@ def predict():
     df['store_and_fwd_flag'] = 'N'
 
     df_scaled = pp.data_processing(df)
-    pred = model.predict(df_scaled)[0][0]
+    pred = model.predict(df_scaled)[0]
     pred_print = str(int(pred // 60)) + " Minutes " + str(int(round(pred % 60, 0))) + " Seconds"
 
     return pred_print

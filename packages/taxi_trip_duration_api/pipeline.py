@@ -46,7 +46,7 @@ for fid, feature in neighbor_pop['geometry'].items():
 
 def datetime_processing(df):
     # if isinstance(df['pickup_datetime'], dt.datetime) == False:
-    #     df['pickup_datetime'] = df['pickup_datetime'].apply(lambda d : dt.datetime.strptime(d, '%Y-%m-%d %H:%M:%S'))
+    # df['pickup_datetime'] = df['pickup_datetime'].apply(lambda d : dt.datetime.strptime(d, '%Y-%m-%d %H:%M:%S'))
     df['pickup_month'] = df['pickup_datetime'].apply(lambda d : d.month)
     df['pickup_date'] = df['pickup_datetime'].apply(lambda d : d.day)
     df['pickup_hour'] = df['pickup_datetime'].apply(lambda d : d.hour)
