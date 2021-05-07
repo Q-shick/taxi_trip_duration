@@ -31,16 +31,16 @@ graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 #----------------------------------------------------------------------------------
 
 # Flask instance
-app = Flask(__name__)
+main_app = Flask(__name__)
 
-@app.route('/')
+@main_app.route('/')
 def home():
     return render_template('index.html',
                            graphJSON=graphJSON,
                            prediction_text="0 Mintues",
                            mapbox_access_token=config.API_KEYS["mapbox"])
 
-@app.route('/predict', methods=['POST'])
+@main_app.route('/predict', methods=['POST'])
 def predict():
     df = pd.DataFrame([[float(x) for x in request.form.values()]], columns=config.INPUT_VARS.keys())
     df = df.astype(config.INPUT_VARS)
@@ -55,4 +55,4 @@ def predict():
     return pred_print
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    main_app.run(debug=True)
