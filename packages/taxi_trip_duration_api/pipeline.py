@@ -1,9 +1,11 @@
-import numpy as np
-import pandas as pd
-
 import pickle
 import requests
 import os
+import boto3
+from io import StringIO
+
+import numpy as np
+import pandas as pd
 
 import datetime as dt
 import holidays as hd
@@ -22,22 +24,44 @@ import config
 
 #----------------------------------------------------------------------------------
 
-congested_df = pd.read_csv('data/congested_areas.csv')
-congested_areas = pickle.load(open("data/congested_areas.pickle", "rb" ))
-scaler = pickle.load(open("data/scaler.pickle", "rb"))
-zero_encoding = pd.read_csv("data/zero_encoding.csv")
+client = boto3.client('s3', aws_access_key_id=os.environ['AWS_ID'], aws_secret_access_key=os.environ['AWS_KEY'])
 
-congested_agg = pd.read_csv("data/congested_agg.csv")
-speed_agg = pd.read_csv("data/speed_agg.csv")
-nta_agg = pd.read_csv("data/nta_agg.csv")
+congested_areas_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/congested_areas.pickle")
+congested_areas = pickle.loads(congested_areas_obj['Body'].read())
 
-hourly_weather = pd.read_csv("data/hourly_weather.csv")
-weather_cols = pd.read_csv('data/weather_cols.csv')
+scaler_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/scaler.pickle")
+scaler = pickle.loads(scaler_obj['Body'].read())
 
-slow_trip_pickup = pd.read_csv("data/slow_trip_pickup.csv")
-slow_trip_dropoff = pd.read_csv("data/slow_trip_dropoff.csv")
+congested_df_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/congested_areas.csv")
+congested_df = pd.read_csv(StringIO(congested_df_obj['Body'].read().decode('utf-8')))
 
-neighbor_pop = pd.read_csv('data/neighbor_pop.csv')
+zero_encoding_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/zero_encoding.csv")
+zero_encoding = pd.read_csv(StringIO(zero_encoding_obj['Body'].read().decode('utf-8')))
+
+congested_agg_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/congested_agg.csv")
+congested_agg = pd.read_csv(StringIO(congested_agg_obj['Body'].read().decode('utf-8')))
+
+speed_agg_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/speed_agg.csv")
+speed_agg = pd.read_csv(StringIO(speed_agg_obj['Body'].read().decode('utf-8')))
+
+nta_agg_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/nta_agg.csv")
+nta_agg = pd.read_csv(StringIO(nta_agg_obj['Body'].read().decode('utf-8')))
+
+hourly_weather_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/hourly_weather.csv")
+hourly_weather = pd.read_csv(StringIO(hourly_weather_obj['Body'].read().decode('utf-8')))
+
+weather_cols_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/weather_cols.csv")
+weather_cols = pd.read_csv(StringIO(weather_cols_obj['Body'].read().decode('utf-8')))
+
+slow_trip_pickup_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/slow_trip_pickup.csv")
+slow_trip_pickup = pd.read_csv(StringIO(slow_trip_pickup_obj['Body'].read().decode('utf-8')))
+
+slow_trip_dropoff_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/slow_trip_dropoff.csv")
+slow_trip_dropoff = pd.read_csv(StringIO(slow_trip_dropoff_obj['Body'].read().decode('utf-8')))
+
+neighbor_pop_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/neighbor_pop.csv")
+neighbor_pop = pd.read_csv(StringIO(neighbor_pop_obj['Body'].read().decode('utf-8')))
+
 neighbor_pop['geometry'] = neighbor_pop['geometry'].apply(lambda g : wkt.loads(g))
 rtree_idx = index.Index()
 for fid, feature in neighbor_pop['geometry'].items():

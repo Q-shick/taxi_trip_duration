@@ -1,8 +1,11 @@
+import os
+import boto3
+from io import StringIO
+
 import numpy as np
 import pandas as pd
 import json
 import pickle
-import os
 import datetime as dt
 
 from flask import Flask, request, jsonify, render_template
@@ -14,10 +17,14 @@ import config, pipeline as pp
 
 #----------------------------------------------------------------------------------
 
-model = pickle.load(open("data/model.pickle", 'rb'))
+client = boto3.client('s3', aws_access_key_id=os.environ['AWS_ID'], aws_secret_access_key=os.environ['AWS_KEY'])
 
-df_map = pd.read_csv("data/taxi_trip_samples_2.csv")
-# px.set_mapbox_access_token(config.API_KEYS["mapbox"])
+model_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/model.pickle")
+model = pickle.loads(model_obj['Body'].read())
+
+df_map_obj = client.get_object(Bucket="nyc-taxi-trip-processing-data", Key="data/taxi_trip_samples_2.csv")
+df_map = pd.read_csv(StringIO(df_map_obj['Body'].read().decode('utf-8')))
+
 px.set_mapbox_access_token(os.environ["MAPBOX"])
 
 fig = px.scatter_mapbox(df_map,
