@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import json
 import pickle
+import os
 import datetime as dt
 
 from flask import Flask, request, jsonify, render_template
@@ -9,7 +10,7 @@ import plotly
 import plotly.graph_objs as go
 import plotly.express as px
 
-# from taxi_trip_duration_api 
+# from taxi_trip_duration_api
 import config, pipeline as pp
 
 #----------------------------------------------------------------------------------
@@ -17,7 +18,8 @@ import config, pipeline as pp
 model = pickle.load(open("data/model.pickle", 'rb'))
 
 df_map = pd.read_csv("data/taxi_trip_samples_2.csv")
-px.set_mapbox_access_token(config.API_KEYS["mapbox"])
+# px.set_mapbox_access_token(config.API_KEYS["mapbox"])
+px.set_mapbox_access_token(os.environ["MAPBOX"])
 
 fig = px.scatter_mapbox(df_map,
                         lat="latitude", lon="longitude",
@@ -39,7 +41,8 @@ def home():
     return render_template('index.html',
                            graphJSON=graphJSON,
                            prediction_text="0 Mintues",
-                           mapbox_access_token=config.API_KEYS["mapbox"])
+                           # mapbox_access_token=config.API_KEYS["mapbox"])
+                           mapbox_access_token=os.environ["MAPBOX"])
 
 @app.route('/predict', methods=['POST'])
 def predict():

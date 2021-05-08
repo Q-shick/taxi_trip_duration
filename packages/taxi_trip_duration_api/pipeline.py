@@ -3,6 +3,7 @@ import pandas as pd
 
 import pickle
 import requests
+import os
 
 import datetime as dt
 import holidays as hd
@@ -17,7 +18,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
 
-# from taxi_trip_duration_api 
+# from taxi_trip_duration_api
 import config
 
 #----------------------------------------------------------------------------------
@@ -158,7 +159,8 @@ def weather_processing(df):
     # try:
     weather = requests.get('http://api.openweathermap.org/data/2.5/weather?lat=' + \
                            str(df['pickup_latitude'].values[0]) + '&lon=' + str(df['pickup_longitude'].values[0]) + \
-                           '&appid=' + config.API_KEYS['weather']).json()
+                           # '&appid=' + config.API_KEYS['weather']).json()
+                           '&appid=' + os.environ['WEATHER']).json()
     # weather.raise_for_status()
     # except Exception as err:
     #     print("Other error occurred: ", err)  # Python 3.6
