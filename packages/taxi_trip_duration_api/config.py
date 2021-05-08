@@ -1,10 +1,3 @@
-import yaml
-
-#----------------------------------------------------------------------------------
-
-with open('config/api_keys.yml') as file:
-    API_KEYS = yaml.load(file, Loader=yaml.FullLoader)['api_keys']
-
 INPUT_VARS = {'pickup_latitude': float, 'pickup_longitude': float,
               'dropoff_latitude': float, 'dropoff_longitude': float,
               'passenger_count': int}
