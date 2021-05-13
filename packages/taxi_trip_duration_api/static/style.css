@@ -15,6 +15,11 @@ p {
 	text-align: justify;
 }
 
+a.external_link {
+	color: blue;
+	font-weight: bold;
+}
+
 #predict {
 	margin-left: 10%;
 	margin-right: 10%;

@@ -1,6 +1,5 @@
 INPUT_VARS = {'pickup_latitude': float, 'pickup_longitude': float,
-              'dropoff_latitude': float, 'dropoff_longitude': float,
-              'passenger_count': int}
+              'dropoff_latitude': float, 'dropoff_longitude': float}
 
 DIST_THRESHOLD = 0.2
 

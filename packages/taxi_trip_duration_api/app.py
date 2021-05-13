@@ -47,7 +47,6 @@ def home():
     return render_template('index.html',
                            graphJSON=graphJSON,
                            prediction_text="0 Mintues",
-                           # mapbox_access_token=config.API_KEYS["mapbox"])
                            mapbox_access_token=os.environ["MAPBOX"])
 
 @app.route('/predict', methods=['POST'])
@@ -55,6 +54,7 @@ def predict():
     df = pd.DataFrame([[float(x) for x in request.form.values()]], columns=config.INPUT_VARS.keys())
     df = df.astype(config.INPUT_VARS)
     df['pickup_datetime'] = dt.datetime.now()
+    df['passenger_count'] = 1
     df['vendor_id'] = 1
     df['store_and_fwd_flag'] = 'N'
 

@@ -17,14 +17,23 @@
   <header>
     <h1 class="section_title">NYC TAXI TRIP DURATION</h1>
     <p>This application predicts taxi trip durations in NYC with an AI model built from 1.5 million
-      <a href="">Historical NYC Taxi Trips</a>, current weather data, and geographical data.
-      The process without calculating routes is light to make predictions fast.
-      Simply click pickup/dropoff points, set the passenger count, and press the prediction button is all it needs.
+      <a class="external_link" href="https://www.kaggle.com/c/nyc-taxi-trip-duration" target="_blank" rel="noopener noreferrer">
+        historical NYC taxi trips</a>,
+      current weather data, and geographical data.
+      <a class="external_link" href="https://www.kaggle.com/qshick/nyc-taxi-trips" target="_blank" rel="noopener noreferrer">
+        This research post</a> explains how 135 inputs are designed, and
+      <a class="external_link" href="https://github.com/Q-shick/taxi_trip_duration" target="_blank" rel="noopener noreferrer">
+        this GitHub repo</a> contains the source code for the application.
+      <br><br>
+      The process without calculating routes enables fast predictions,
+      and users should find it useful because they only need to know the duration estimate, not specific routes.
+      Simply click pickup/dropoff points and the prediction button is all it takes
+      to know the duration of departure from now.
     </p>
   </header>
 
   <div id="predict">
-    <!-- Input to ML model -->
+    <!-- Inputs to ML model -->
     <form id="input_form">
       <br>
       <label for="pickup_latitude">PICK-UP</label>
@@ -35,8 +44,6 @@
       <input id="dropoff_latitude" type="text" name="Dropoff Latitude" placeholder="Dropoff Latitude" required="required"/>
       <input id="dropoff_longitude" type="text" name="Dropoff Longitude" placeholder="Dropoff Longitude" required="required"/>
       <br>
-      <label for="passenger_count">PASSENGERS</label>
-      <input id="passenger_count" type="number" name="Passenger Count" placeholder="Passenger Count" required="required"/>
       <button type="submit" class="btn btn-primary btn-block btn-large" onclick="resetMarker()">Predict Duration</button>
     </form>
     <div id="pred_result"></div>
@@ -46,9 +53,10 @@
 
   <br><br>
 
+  <!-- taxi trips on map animation -->
   <h1 class="section_title">HISTORICAL TRIPS BY HOUR</h1>
   <p>3000 taxi trips randomly selected from the historical data are animated below by hour.
-  Bubble size represents trip distance. Zoom in and hover over to see trip details.</p>
+  Bubble size represents trip distance. Zoom in and hover over the map to see trip details.</p>
   <div id="chart"></div>
 </body>
 
